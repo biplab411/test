@@ -4,34 +4,46 @@ import {
   Column,
   ManyToOne,
 } from 'typeorm';
-import type { OrderStatus } from '../order.constants';
 import { Corear } from '../../corear/entity/corear.entity';
+import { ORDER_STATUS } from '../order.constants';
+
+export enum DELIVERY_TYPE {
+  EXPRESS = 'EXPRESS',
+  NORMAL = 'NORMAL',
+}
 
 @Entity('orders')
 export class Order {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column('int')
+  @Column('float')
   pickupLat: number;
 
-  @Column('int')
+  @Column('float')
   pickupLng: number;
 
-  @Column('int')
+  @Column('float')
   dropLat: number;
 
-  @Column('int')
+  @Column('float')
   dropLng: number;
 
-  @Column({ type: 'varchar', length: 10 })
-  deliveryType: 'EXPRESS' | 'NORMAL';
+  @Column({
+    type: 'enum',
+    enum: DELIVERY_TYPE,
+  })
+  deliveryType: DELIVERY_TYPE;
 
   @Column({ type: 'varchar', length: 255 })
   packageDetails: string;
 
-  @Column({ type: 'varchar', length: 20 })
-  status: OrderStatus;
+  @Column({
+    type: 'enum',
+    enum: ORDER_STATUS,
+    default: ORDER_STATUS.CREATED,
+  })
+  status: ORDER_STATUS;
 
   @ManyToOne(() => Corear, (corear) => corear.orders, {
     nullable: true,

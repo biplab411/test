@@ -1,4 +1,3 @@
-// src/user/entity/user.entity.ts
 import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
 import { Exclude } from 'class-transformer';
 

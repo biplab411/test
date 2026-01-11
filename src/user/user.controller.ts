@@ -1,4 +1,3 @@
-// src/auth/auth.controller.ts
 import {
   Controller,
   Post,
@@ -12,13 +11,10 @@ import {
 import { UserService } from '../user/user.service';
 import { LoginDto } from '../auth/dto/login.dto';
 
-@Controller('auth')
-export class AuthController {
+@Controller('users')
+export class UserController {
   constructor(private readonly userService: UserService) {}
 
-  // ===============================
-  // LOGIN
-  // ===============================
   @Post('login')
   async login(@Body() loginDto: LoginDto) {
     try {
@@ -42,3 +38,5 @@ export class AuthController {
     }
   }
 }
+
+

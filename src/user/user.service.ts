@@ -21,7 +21,7 @@ export class UserService {
 
   async login(dto: LoginDto): Promise<{ user: User }> {
     try {
-      // 1️⃣ Fetch user using email OR mobile
+      //  Fetch user using email OR mobile
       const user = await this.userRepository.findOne({
         where: [{ email: dto.emailPhone }, { mobile: dto.emailPhone }],
       });
@@ -30,12 +30,12 @@ export class UserService {
         throw new UnauthorizedException('Invalid credentials');
       }
 
-      // 2️⃣ Validate user account status
+      //  Validate user account status
       if (user.isActive !== 1) {
         throw new UnauthorizedException('User account is deactivated');
       }
 
-      // 3️⃣ Validate password
+      //  Validate password
       const isPasswordValid = await bcrypt.compare(
         dto.password,
         user.password,
@@ -45,12 +45,12 @@ export class UserService {
         throw new UnauthorizedException('Invalid credentials');
       }
 
-      // 4️⃣ Return sanitized user entity
+      //  Return sanitized user entity
       return {
         user: plainToInstance(User, user),
       };
     } catch (error) {
-      // 5️⃣ Handle known exceptions
+      //  Handle known exceptions
       if (error instanceof UnauthorizedException) {
         throw error;
       }

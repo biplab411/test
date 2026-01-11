@@ -19,9 +19,7 @@ import { UpdateOrderStatusDto } from './dto/update-order-status.dto';
 export class OrderController {
   constructor(private readonly orderService: OrderService) {}
 
-  // ===============================
   // CREATE ORDER
-  // ===============================
   @Post()
   async create(@Body() dto: CreateOrderDto) {
     try {
@@ -36,9 +34,7 @@ export class OrderController {
     }
   }
 
-  // ===============================
   // FIND ALL ORDERS
-  // ===============================
   @Get()
   async findAll() {
     try {
@@ -51,9 +47,7 @@ export class OrderController {
     }
   }
 
-  // ===============================
   // FIND ORDER BY ID
-  // ===============================
   @Get(':id')
   async findOne(@Param('id', ParseIntPipe) id: number) {
     try {
@@ -70,9 +64,7 @@ export class OrderController {
     }
   }
 
-  // ===============================
   // UPDATE ORDER STATUS
-  // ===============================
   @Patch(':id/status')
   async updateStatus(
     @Param('id', ParseIntPipe) id: number,

@@ -2,10 +2,11 @@ import {
   Injectable,
   NotFoundException,
   InternalServerErrorException,
+  BadRequestException
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-
+import { validateOrderTransition } from './order.utils';
 import { Order } from './entity/order.entity';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderStatusDto } from './dto/update-order-status.dto';
@@ -16,20 +17,16 @@ export class OrderService {
   constructor(
     @InjectRepository(Order)
     private readonly orderRepo: Repository<Order>,
-  ) {}
+  ) { }
 
-  // ===============================
   // CREATE ORDER
-  // ===============================
   async create(dto: CreateOrderDto): Promise<Order> {
     try {
-      // 1️⃣ Create order entity
       const order = this.orderRepo.create({
         ...dto,
         status: ORDER_STATUS.CREATED,
       });
 
-      // 2️⃣ Save order
       return await this.orderRepo.save(order);
     } catch (error) {
       console.error('Create order error:', error);
@@ -37,12 +34,9 @@ export class OrderService {
     }
   }
 
-  // ===============================
   // FIND ALL ORDERS
-  // ===============================
   async findAll(): Promise<Order[]> {
     try {
-      // 1️⃣ Fetch all orders with corear relation
       return await this.orderRepo.find({
         relations: ['corear'],
       });
@@ -52,18 +46,14 @@ export class OrderService {
     }
   }
 
-  // ===============================
   // FIND ORDER BY ID
-  // ===============================
   async findOne(id: number): Promise<Order> {
     try {
-      // 1️⃣ Fetch order by id
       const order = await this.orderRepo.findOne({
         where: { id },
         relations: ['corear'],
       });
 
-      // 2️⃣ Validate existence
       if (!order) {
         throw new NotFoundException('Order not found');
       }
@@ -79,24 +69,25 @@ export class OrderService {
     }
   }
 
-  // ===============================
   // UPDATE ORDER STATUS
-  // ===============================
   async updateStatus(
     id: number,
     dto: UpdateOrderStatusDto,
   ): Promise<Order> {
     try {
-      // 1️⃣ Fetch existing order
       const order = await this.findOne(id);
 
-      // 2️⃣ Update status
+      // ENFORCE LIFECYCLE
+      validateOrderTransition(order.status, dto.status);
+
       order.status = dto.status;
 
-      // 3️⃣ Save order
       return await this.orderRepo.save(order);
     } catch (error) {
-      if (error instanceof NotFoundException) {
+      if (
+        error instanceof NotFoundException ||
+        error instanceof BadRequestException
+      ) {
         throw error;
       }
 
@@ -106,4 +97,5 @@ export class OrderService {
       );
     }
   }
+
 }

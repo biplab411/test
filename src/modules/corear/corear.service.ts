@@ -1,8 +1,8 @@
-// src/corear/corear.service.ts
 import {
   Injectable,
   BadRequestException,
   InternalServerErrorException,
+  NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -17,18 +17,13 @@ export class CorearService {
     private readonly corearRepo: Repository<Corear>,
   ) {}
 
-  // ===============================
-  // CREATE COREAR
-  // ===============================
   async create(dto: CreateCorearDto) {
     try {
-      // 1️⃣ Create corear entity
       const corear = this.corearRepo.create({
         ...dto,
         isAvailable: true,
       });
 
-      // 2️⃣ Save corear
       return await this.corearRepo.save(corear);
     } catch (error) {
       console.error('Create corear error:', error);
@@ -36,12 +31,8 @@ export class CorearService {
     }
   }
 
-  // ===============================
-  // FIND AVAILABLE COREARS
-  // ===============================
   async findAvailableCorears(): Promise<Corear[]> {
     try {
-      // 1️⃣ Fetch available corears
       return await this.corearRepo.find({
         where: { isAvailable: true },
       });
@@ -53,65 +44,32 @@ export class CorearService {
     }
   }
 
-  // ===============================
-  // MARK COREAR UNAVAILABLE
-  // ===============================
   async markUnavailable(corear: Corear) {
-    try {
-      // 1️⃣ Update availability
-      corear.isAvailable = false;
-
-      // 2️⃣ Save corear
-      return await this.corearRepo.save(corear);
-    } catch (error) {
-      console.error('Mark corear unavailable error:', error);
-      throw new InternalServerErrorException(
-        'Failed to mark corear unavailable',
-      );
-    }
+    corear.isAvailable = false;
+    return this.corearRepo.save(corear);
   }
 
-  // ===============================
-  // RELEASE COREAR
-  // ===============================
   async releaseCorear(corear: Corear) {
-    try {
-      // 1️⃣ Update availability
-      corear.isAvailable = true;
-
-      // 2️⃣ Save corear
-      return await this.corearRepo.save(corear);
-    } catch (error) {
-      console.error('Release corear error:', error);
-      throw new InternalServerErrorException(
-        'Failed to release corear',
-      );
-    }
+    corear.isAvailable = true;
+    return this.corearRepo.save(corear);
   }
 
-  // ===============================
-  // UPDATE COREAR LOCATION
-  // ===============================
   async updateLocation(id: number, lat: number, lng: number) {
     try {
-      // 1️⃣ Fetch corear
       const corear = await this.corearRepo.findOne({
         where: { id },
       });
 
-      // 2️⃣ Validate existence
       if (!corear) {
-        throw new BadRequestException('Corear not found');
+        throw new NotFoundException('Corear not found');
       }
 
-      // 3️⃣ Update location
       corear.lat = lat;
       corear.lng = lng;
 
-      // 4️⃣ Save corear
       return await this.corearRepo.save(corear);
     } catch (error) {
-      if (error instanceof BadRequestException) {
+      if (error instanceof NotFoundException) {
         throw error;
       }
 
@@ -122,12 +80,8 @@ export class CorearService {
     }
   }
 
-  // ===============================
-  // FIND ALL COREARS
-  // ===============================
   async findAll() {
     try {
-      // 1️⃣ Fetch all corears
       return await this.corearRepo.find();
     } catch (error) {
       console.error('Find all corears error:', error);

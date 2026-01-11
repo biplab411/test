@@ -1,6 +1,11 @@
-// src/corear/corear.entity.ts
-import { Entity, PrimaryGeneratedColumn, Column,   OneToMany } from 'typeorm';
-import { Order } from 'src/modules/order/entity/order.entity';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  OneToMany,
+} from 'typeorm';
+import { Order } from '../../order/entity/order.entity';
+
 @Entity('corears')
 export class Corear {
   @PrimaryGeneratedColumn()
@@ -15,7 +20,7 @@ export class Corear {
   @Column('int')
   lng: number;
 
-  // one corear can handle only one active order
+  // true = can accept new order
   @Column({ default: true })
   isAvailable: boolean;
 

@@ -1,21 +1,12 @@
-import { IsInt, IsString, IsIn } from 'class-validator';
+import { DELIVERY_TYPE } from '../entity/order.entity';
 
 export class CreateOrderDto {
-  @IsInt()
   pickupLat: number;
-
-  @IsInt()
   pickupLng: number;
-
-  @IsInt()
   dropLat: number;
-
-  @IsInt()
   dropLng: number;
 
-  @IsIn(['EXPRESS', 'NORMAL'])
-  deliveryType: 'EXPRESS' | 'NORMAL';
+  deliveryType: DELIVERY_TYPE;
 
-  @IsString()
   packageDetails: string;
 }

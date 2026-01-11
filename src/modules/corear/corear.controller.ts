@@ -1,4 +1,3 @@
-// src/corear/corear.controller.ts
 import {
   Controller,
   Post,
@@ -19,9 +18,7 @@ import { UpdateCorearLocationDto } from './dto/update-corear-location.dto';
 export class CorearController {
   constructor(private readonly corearService: CorearService) {}
 
-  // ===============================
   // CREATE COREAR
-  // ===============================
   @Post()
   async create(@Body() dto: CreateCorearDto) {
     try {
@@ -36,9 +33,7 @@ export class CorearController {
     }
   }
 
-  // ===============================
   // FIND ALL COREARS
-  // ===============================
   @Get()
   async findAll() {
     try {
@@ -51,9 +46,7 @@ export class CorearController {
     }
   }
 
-  // ===============================
   // UPDATE COREAR LOCATION
-  // ===============================
   @Patch(':id/location')
   async updateLocation(
     @Param('id', ParseIntPipe) id: number,
