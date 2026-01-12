@@ -1,4 +1,3 @@
-// src/user/user.service.ts
 import {
   Injectable,
   UnauthorizedException,
@@ -19,38 +18,44 @@ export class UserService {
     private readonly userRepository: Repository<User>,
   ) {}
 
-  async login(dto: LoginDto): Promise<{ user: User }> {
+  // USED BY JWT / AUTH SERVICE
+  async validateUser(dto: LoginDto): Promise<User | null> {
     try {
-      //  Fetch user using email OR mobile
       const user = await this.userRepository.findOne({
         where: [{ email: dto.emailPhone }, { mobile: dto.emailPhone }],
       });
 
-      if (!user) {
-        throw new UnauthorizedException('Invalid credentials');
+      if (!user || user.isActive !== 1) {
+        return null;
       }
 
-      //  Validate user account status
-      if (user.isActive !== 1) {
-        throw new UnauthorizedException('User account is deactivated');
-      }
-
-      //  Validate password
       const isPasswordValid = await bcrypt.compare(
         dto.password,
         user.password,
       );
 
       if (!isPasswordValid) {
+        return null;
+      }
+
+      return plainToInstance(User, user);
+    } catch (error) {
+      console.error('Validate user error:', error);
+      throw new InternalServerErrorException('User validation failed');
+    }
+  }
+
+  // USED BY LOGIN API
+  async login(dto: LoginDto): Promise<{ user: User }> {
+    try {
+      const user = await this.validateUser(dto);
+
+      if (!user) {
         throw new UnauthorizedException('Invalid credentials');
       }
 
-      //  Return sanitized user entity
-      return {
-        user: plainToInstance(User, user),
-      };
+      return { user };
     } catch (error) {
-      //  Handle known exceptions
       if (error instanceof UnauthorizedException) {
         throw error;
       }

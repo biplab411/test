@@ -1,29 +1,24 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
-import { OrderModule } from './modules/order/order.module';
-import { CorearModule } from './modules/corear/corear.module';
+import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
-
-import { User } from './user/entity/user.entity';
-import { Corear } from './modules/corear/entity/corear.entity';
-import { Order } from './modules/order/entity/order.entity';
-
+import { OrderModule } from './modules/order/order.module';
 @Module({
   imports: [
     TypeOrmModule.forRoot({
-      type: 'mysql', // or postgres
+      type: 'postgres',
       host: 'localhost',
-      port: 3306,
-      username: 'root',
+      port: 5432,
+      username: 'postgres',
       password: 'password',
-      database: 'my_db',
-      entities: [User, Corear, Order],
-      synchronize: true, // ⚠ dev only
+      database: 'testdb',
+      autoLoadEntities: true,
+      synchronize: true, // DEV ONLY
     }),
-    OrderModule,
-    CorearModule,
+    AuthModule,
     UserModule,
+    OrderModule,
   ],
 })
 export class AppModule {}

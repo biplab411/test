@@ -1,21 +1,22 @@
 import { Module } from '@nestjs/common';
-import { TypeOrmModule } from '@nestjs/typeorm';
+import { JwtModule } from '@nestjs/jwt';
+import { PassportModule } from '@nestjs/passport';
+
 import { AuthController } from './auth.controller';
-import { UserModule } from 'src/user/user.module';
+import { AuthService } from './auth.service';
+import { JwtStrategy } from './jwt/jwt.strategy';
+import { UserModule } from '../user/user.module';
+
 @Module({
   imports: [
-    TypeOrmModule.forRoot({
-      type: 'postgres', // or mysql/sqlite
-      host: 'localhost',
-      port: 5432,
-      username: 'postgres',
-      password: 'password',
-      database: 'testdb',
-      autoLoadEntities: true,
-      synchronize: true, // DEV ONLY
-    }),
     UserModule,
+    PassportModule,
+    JwtModule.register({
+      secret: 'MY_SUPER_SECRET_KEY', // move to .env later
+      signOptions: { expiresIn: '1d' },
+    }),
   ],
   controllers: [AuthController],
+  providers: [AuthService, JwtStrategy],
 })
-export class AppModule {}
+export class AuthModule {}
