@@ -1,24 +1,23 @@
 import { Module } from '@nestjs/common';
-import { TypeOrmModule } from '@nestjs/typeorm';
+import { ChatController } from './chat/chat.controller';
+import { ChatService } from './chat/chat.service';
+import { AgentService } from './agents/agent.service';
+import { RouterAgent } from './agents/router.agent';
+import { SupportAgent } from './agents/support.agent';
+import { OrderAgent } from './agents/order.agent';
+import { BillingAgent } from './agents/billing.agent';
+import { DatabaseModule } from './database/database.module';
 
-import { AuthModule } from './auth/auth.module';
-import { UserModule } from './user/user.module';
-import { OrderModule } from './modules/order/order.module';
 @Module({
-  imports: [
-    TypeOrmModule.forRoot({
-      type: 'postgres',
-      host: 'localhost',
-      port: 5432,
-      username: 'postgres',
-      password: 'password',
-      database: 'testdb',
-      autoLoadEntities: true,
-      synchronize: true, // DEV ONLY
-    }),
-    AuthModule,
-    UserModule,
-    OrderModule,
+  imports: [DatabaseModule],   
+  controllers: [ChatController],
+  providers: [
+    ChatService,
+    AgentService,
+    RouterAgent,
+    SupportAgent,
+    OrderAgent,
+    BillingAgent,
   ],
 })
 export class AppModule {}
