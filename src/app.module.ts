@@ -1,29 +1,23 @@
 import { Module } from '@nestjs/common';
-import { TypeOrmModule } from '@nestjs/typeorm';
-
-import { OrderModule } from './modules/order/order.module';
-import { CorearModule } from './modules/corear/corear.module';
-import { UserModule } from './user/user.module';
-
-import { User } from './user/entity/user.entity';
-import { Corear } from './modules/corear/entity/corear.entity';
-import { Order } from './modules/order/entity/order.entity';
+import { ChatController } from './chat/chat.controller';
+import { ChatService } from './chat/chat.service';
+import { AgentService } from './agents/agent.service';
+import { RouterAgent } from './agents/router.agent';
+import { SupportAgent } from './agents/support.agent';
+import { OrderAgent } from './agents/order.agent';
+import { BillingAgent } from './agents/billing.agent';
+import { DatabaseModule } from './database/database.module';
 
 @Module({
-  imports: [
-    TypeOrmModule.forRoot({
-      type: 'mysql', // or postgres
-      host: 'localhost',
-      port: 3306,
-      username: 'root',
-      password: 'password',
-      database: 'my_db',
-      entities: [User, Corear, Order],
-      synchronize: true, // ⚠ dev only
-    }),
-    OrderModule,
-    CorearModule,
-    UserModule,
+  imports: [DatabaseModule],   
+  controllers: [ChatController],
+  providers: [
+    ChatService,
+    AgentService,
+    RouterAgent,
+    SupportAgent,
+    OrderAgent,
+    BillingAgent,
   ],
 })
 export class AppModule {}
